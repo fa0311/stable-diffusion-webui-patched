@@ -20,7 +20,7 @@ def pil_to_byte(img, format="png"):
     img_bytes = img_bytes.getvalue()
     return img_bytes
 
-def send_image_to_discord(url, image_files):
+def send_images_to_discord(url, image_files):
     files = {}
     for key in range(len(image_files)):
         string_img = pil_to_byte(image_files[key], format="png")
@@ -28,7 +28,16 @@ def send_image_to_discord(url, image_files):
     res = requests.post(url, json={}, files=files)
     return res
 
+def send_image_to_discord(url, image_file):
+    string_img = pil_to_byte(image_file, format="png")
+    files = {"file.png":string_img}
+    res = requests.post(url, json={}, files=files)
+    return res
 
+
+def send_text_to_discord(url, body):
+    res = requests.post(url, json=body)
+    return res
 
 class Script(scripts.Script):
     def title(self):
@@ -40,5 +49,12 @@ class Script(scripts.Script):
 
     def run(self, p, url):
         proc = process_images(p)
-        print(send_image_to_discord(url, proc.images).status_code)
+        body = {
+            "embeds": [{
+                "title": p.prompt,
+            }]
+        }
+        print(send_image_to_discord(url, proc.images[0]).status_code)
+        print(send_text_to_discord(url, body).status_code)
+        # print(send_images_to_discord(url, proc.images).status_code)
         return proc
