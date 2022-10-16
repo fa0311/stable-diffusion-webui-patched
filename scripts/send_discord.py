@@ -32,7 +32,7 @@ def send_image_to_discord(url, image_files):
 
 class Script(scripts.Script):
     def title(self):
-        return "send discord"
+        return "Send discord"
 
     def ui(self, is_img2img):
         url = gr.Textbox(label="Discord Webhook URL", lines=1)
