@@ -35,7 +35,7 @@ class Script(scripts.Script):
         return "send discord"
 
     def ui(self, is_img2img):
-        url = gr.Textbox(label="Discord Webhook URL", lines=1,value="https://discord.com/api/webhooks/")
+        url = gr.Textbox(label="Discord Webhook URL", lines=1)
         return [url]
 
     def run(self, p, url):
