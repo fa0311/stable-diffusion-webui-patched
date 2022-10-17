@@ -5,6 +5,7 @@
 ### send discord
 
 [scripts/send_discord.py](scripts/send_discord.py)
+It is recommended to change `customscript/send_discord.py/txt2img/Discord Webhook URL/value` in [config.json](config.json)
 
 ## Other
 
