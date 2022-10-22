@@ -2,7 +2,7 @@
 
 ## Send discord
 
-[scripts/send_discord.py](scripts/send_discord.py)
+Check the [custom scripts](https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Custom-Scripts) wiki page for extra scripts developed by users.
 
 It is recommended to change `customscript/send_discord.py/txt2img/Discord Webhook URL/value` in [config.json](config.json)
 
