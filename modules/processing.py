@@ -403,8 +403,6 @@ def process_images(p: StableDiffusionProcessing) -> Processed:
             if (len(prompts) == 0):
                 break
 
-            #uc = p.sd_model.get_learned_conditioning(len(prompts) * [p.negative_prompt])
-            #c = p.sd_model.get_learned_conditioning(prompts)
             with devices.autocast():
                 uc = prompt_parser.get_learned_conditioning(shared.sd_model, len(prompts) * [p.negative_prompt], p.steps)
                 c = prompt_parser.get_multicond_learned_conditioning(shared.sd_model, prompts, p.steps)
@@ -524,6 +522,8 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
             else:
                 state.job_count = state.job_count * 2
 
+            self.extra_generation_params["First pass size"] = f"{self.firstphase_width}x{self.firstphase_height}"
+
             if self.firstphase_width == 0 or self.firstphase_height == 0:
                 desired_pixel_count = 512 * 512
                 actual_pixel_count = self.width * self.height
@@ -545,7 +545,6 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
                     firstphase_width_truncated = self.firstphase_height * self.width / self.height
                     firstphase_height_truncated = self.firstphase_height
 
-            self.extra_generation_params["First pass size"] = f"{self.firstphase_width}x{self.firstphase_height}"
             self.truncate_x = int(self.firstphase_width - firstphase_width_truncated) // opt_f
             self.truncate_y = int(self.firstphase_height - firstphase_height_truncated) // opt_f
 
@@ -624,7 +623,7 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
 class StableDiffusionProcessingImg2Img(StableDiffusionProcessing):
     sampler = None
 
-    def __init__(self, init_images=None, resize_mode=0, denoising_strength=0.75, mask=None, mask_blur=4, inpainting_fill=0, inpaint_full_res=True, inpaint_full_res_padding=0, inpainting_mask_invert=0, **kwargs):
+    def __init__(self, init_images: list=None, resize_mode: int=0, denoising_strength: float=0.75, mask: Any=None, mask_blur: int=4, inpainting_fill: int=0, inpaint_full_res: bool=True, inpaint_full_res_padding: int=0, inpainting_mask_invert: int=0, **kwargs):
         super().__init__(**kwargs)
 
         self.init_images = init_images
@@ -715,6 +714,10 @@ class StableDiffusionProcessingImg2Img(StableDiffusionProcessing):
             batch_images = np.expand_dims(imgs[0], axis=0).repeat(self.batch_size, axis=0)
             if self.overlay_images is not None:
                 self.overlay_images = self.overlay_images * self.batch_size
+
+            if self.color_corrections is not None and len(self.color_corrections) == 1:
+                self.color_corrections = self.color_corrections * self.batch_size
+
         elif len(imgs) <= self.batch_size:
             self.batch_size = len(imgs)
             batch_images = np.array(imgs)
