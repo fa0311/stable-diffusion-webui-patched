@@ -29,7 +29,7 @@ Note that a password is generated each time it is activated, but it is not crypt
 
 sample: `--gradio-auth gradio-user:24040-14320-20034`
 
-## Add Config entries (Merged [#3178](https://github.com/AUTOMATIC1111/stable-diffusion-webui/pull/3178))
+## Add Config entries (Merged [#3041](https://github.com/AUTOMATIC1111/stable-diffusion-webui/pull/3041))
 
 Script added to ui-config.json.
 
