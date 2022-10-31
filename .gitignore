@@ -33,3 +33,5 @@ notification.mp3
 /javascript/tagAutocomplete.js
 /scripts/tag_autocomplete_helper.py
 /extensions
+/test/stdout.txt
+/test/stderr.txt
