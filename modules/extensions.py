@@ -6,7 +6,6 @@ import git
 
 from modules import paths, shared
 
-
 extensions = []
 extensions_dir = os.path.join(paths.script_path, "extensions")
 
@@ -34,8 +33,11 @@ class Extension:
         if repo is None or repo.bare:
             self.remote = None
         else:
-            self.remote = next(repo.remote().urls, None)
-            self.status = 'unknown'
+            try:
+                self.remote = next(repo.remote().urls, None)
+                self.status = 'unknown'
+            except Exception:
+                self.remote = None
 
     def list_files(self, subdir, extension):
         from modules import scripts
@@ -81,3 +83,4 @@ def list_extensions():
 
         extension = Extension(name=dirname, path=path, enabled=dirname not in shared.opts.disabled_extensions)
         extensions.append(extension)
+
