@@ -15,11 +15,19 @@ git merge upstream/master
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui-aesthetic-gradients extensions/aesthetic-gradients
 ```
 
-## Send discord custom scripts
+### What custom scripts?
 
 Check the [custom scripts](https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Custom-Scripts) wiki page for extra scripts developed by users.
 
+## Send discord custom scripts
+
+`scripts/send_discord.py`
+
 It is recommended to change `customscript/send_discord.py/txt2img/Discord Webhook URL/value` in [config.json](config.json)
+
+## Video to video with DeepDanbooru custom scripts
+
+`scripts/deep-vid2vid.py`
 
 ## Add share.bat
 
