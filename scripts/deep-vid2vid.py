@@ -23,9 +23,14 @@ from subprocess import Popen, PIPE
 import numpy as np
 
 
+from modules.deepbooru import DeepDanbooru
+
+
+deepB = DeepDanbooru()
+
 class Script(scripts.Script):
     def title(self):
-        return "[C] Video to video"
+        return "DeepDanbooru Video to video"
 
     def show(self, is_img2img):
         return is_img2img
@@ -103,6 +108,9 @@ class Script(scripts.Script):
             f"-ss {start_time}" + f" -to {end_time}" if len(end_time) else ""
         )
 
+
+        deepB.start()
+
         import modules
 
         path = modules.paths.script_path
@@ -124,7 +132,16 @@ class Script(scripts.Script):
         )
         decoder.start()
 
-        output_file = input_file.split("\\")[-1]
+
+        file = os.path.splitext(os.path.basename(input_file))[0]
+        ext = os.path.splitext(os.path.basename(input_file))[1]
+        num = 0
+        output_file = f"{file}{num}{ext}"
+        while os.path.isfile(f"{save_dir}/{output_file}"):
+            num += 1
+            output_file = f"{file}{num}{ext}"
+
+
         encoder = ffmpeg(
             " ".join(
                 [
@@ -159,6 +176,8 @@ class Script(scripts.Script):
             )
             batch.append(image_PIL)
 
+
+
             if len(batch) == p.batch_size:
                 if seed_walk != 0:
                     seed_step = (
@@ -174,6 +193,8 @@ class Script(scripts.Script):
 
                 p.seed = [seed for _ in batch]
                 p.init_images = batch
+                p.prompt = deepB.tag_multi(batch[0])
+                print(p.prompt)
                 batch = []
 
                 state.job = f"{frame}/{int(loops)}|{seed}/{seed_step}"
@@ -187,6 +208,7 @@ class Script(scripts.Script):
             raw_image = decoder.readout(pull_count)
             frame += 1
 
+        deepB.stop()
         return Processed(p, [], p.seed, initial_info)
 
 
