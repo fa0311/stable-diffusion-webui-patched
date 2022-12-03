@@ -194,7 +194,7 @@ class Script(scripts.Script):
 
                 p.seed = [seed for _ in batch]
                 p.init_images = batch
-                p.prompt = base_prompt + deepB.tag_multi(batch[0])
+                p.prompt = base_prompt + " " + deepB.tag_multi(batch[0])
                 print(p.prompt)
                 batch = []
 
