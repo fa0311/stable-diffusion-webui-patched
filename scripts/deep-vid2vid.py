@@ -158,6 +158,7 @@ class Script(scripts.Script):
 
         batch = []
         seed = initial_seed
+        base_prompt = p.prompt
 
         frame = 1
         if len(end_time) > 0:
@@ -193,7 +194,7 @@ class Script(scripts.Script):
 
                 p.seed = [seed for _ in batch]
                 p.init_images = batch
-                p.prompt = deepB.tag_multi(batch[0])
+                p.prompt = base_prompt + deepB.tag_multi(batch[0])
                 print(p.prompt)
                 batch = []
 
