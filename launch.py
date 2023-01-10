@@ -13,6 +13,21 @@ dir_extensions = "extensions"
 python = sys.executable
 git = os.environ.get('GIT', "git")
 index_url = os.environ.get('INDEX_URL', "")
+stored_commit_hash = None
+
+
+def commit_hash():
+    global stored_commit_hash
+
+    if stored_commit_hash is not None:
+        return stored_commit_hash
+
+    try:
+        stored_commit_hash = run(f"{git} rev-parse HEAD").strip()
+    except Exception:
+        stored_commit_hash = "<none>"
+
+    return stored_commit_hash
 
 
 def extract_arg(args, name):
@@ -157,7 +172,7 @@ def run_extensions_installers(settings_file):
         run_extension_installer(os.path.join(dir_extensions, dirname_extension))
 
 
-def prepare_enviroment():
+def prepare_environment():
     torch_command = os.environ.get('TORCH_COMMAND', "pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113")
     requirements_file = os.environ.get('REQS_FILE', "requirements_versions.txt")
     commandline_args = os.environ.get('COMMANDLINE_ARGS', "")
@@ -194,10 +209,7 @@ def prepare_enviroment():
     xformers = '--xformers' in sys.argv
     ngrok = '--ngrok' in sys.argv
 
-    try:
-        commit = run(f"{git} rev-parse HEAD").strip()
-    except Exception:
-        commit = "<none>"
+    commit = commit_hash()
 
     print(f"Python {sys.version}")
     print(f"Commit hash: {commit}")
@@ -291,5 +303,5 @@ def start():
 
 
 if __name__ == "__main__":
-    prepare_enviroment()
+    prepare_environment()
     start()

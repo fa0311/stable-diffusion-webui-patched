@@ -18,7 +18,7 @@ def draw_xy_grid(xs, ys, x_label, y_label, cell):
     ver_texts = [[images.GridAnnotation(y_label(y))] for y in ys]
     hor_texts = [[images.GridAnnotation(x_label(x))] for x in xs]
 
-    first_pocessed = None
+    first_processed = None
 
     state.job_count = len(xs) * len(ys)
 
@@ -27,29 +27,30 @@ def draw_xy_grid(xs, ys, x_label, y_label, cell):
             state.job = f"{ix + iy * len(xs) + 1} out of {len(xs) * len(ys)}"
 
             processed = cell(x, y)
-            if first_pocessed is None:
-                first_pocessed = processed
+            if first_processed is None:
+                first_processed = processed
 
             res.append(processed.images[0])
 
     grid = images.image_grid(res, rows=len(ys))
     grid = images.draw_grid_annotations(grid, res[0].width, res[0].height, hor_texts, ver_texts)
 
-    first_pocessed.images = [grid]
+    first_processed.images = [grid]
 
-    return first_pocessed
+    return first_processed
 
 
 class Script(scripts.Script):
     def title(self):
         return "Prompt matrix"
 
-    def ui(self, is_img2img):
-        put_at_start = gr.Checkbox(label='Put variable parts at start of prompt', value=False)
+    def ui(self, is_img2img):        
+        put_at_start = gr.Checkbox(label='Put variable parts at start of prompt', value=False, elem_id=self.elem_id("put_at_start"))
+        different_seeds = gr.Checkbox(label='Use different seed for each picture', value=False, elem_id=self.elem_id("different_seeds"))
 
-        return [put_at_start]
+        return [put_at_start, different_seeds]
 
-    def run(self, p, put_at_start):
+    def run(self, p, put_at_start, different_seeds):
         modules.processing.fix_seed(p)
 
         original_prompt = p.prompt[0] if type(p.prompt) == list else p.prompt
@@ -73,7 +74,7 @@ class Script(scripts.Script):
         print(f"Prompt matrix will create {len(all_prompts)} images using a total of {p.n_iter} batches.")
 
         p.prompt = all_prompts
-        p.seed = [p.seed for _ in all_prompts]
+        p.seed = [p.seed + (i if different_seeds else 0) for i in range(len(all_prompts))]
         p.prompt_for_display = original_prompt
         processed = process_images(p)
 
