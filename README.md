@@ -3,13 +3,13 @@
 ## Install
 
 ```git
-git clone https://github.com/fa0311/stable-diffusion-webui-patched/tree/add-xformers-message
+git clone https://github.com/fa0311/stable-diffusion-webui-patched
 ```
 
 ### Option
 
 ```git
-git clone https://github.com/fa0311/stable-diffusion-webui-patched/tree/add-xformers-message
+git clone https://github.com/fa0311/stable-diffusion-webui-patched
 git fetch https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
 git merge upstream/master
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui-aesthetic-gradients extensions/aesthetic-gradients
