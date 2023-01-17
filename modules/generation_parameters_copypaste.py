@@ -7,7 +7,7 @@ from pathlib import Path
 
 import gradio as gr
 from modules.shared import script_path
-from modules import shared, ui_tempdir
+from modules import shared, ui_tempdir, script_callbacks
 import tempfile
 from PIL import Image
 
@@ -37,6 +37,9 @@ def quote(text):
 
 
 def image_from_url_text(filedata):
+    if filedata is None:
+        return None
+
     if type(filedata) == list and len(filedata) > 0 and type(filedata[0]) == dict and filedata[0].get("is_file", False):
         filedata = filedata[0]
 
@@ -298,6 +301,7 @@ def connect_paste(button, paste_fields, input_comp, jsfunc=None):
                     prompt = file.read()
 
         params = parse_generation_parameters(prompt)
+        script_callbacks.infotext_pasted_callback(prompt, params)
         res = []
 
         for output, key in paste_fields:

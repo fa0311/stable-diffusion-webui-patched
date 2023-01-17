@@ -12,7 +12,7 @@ from modules.shared import opts, cmd_opts
 from modules.textual_inversion import autocrop
 
 
-def preprocess(process_src, process_dst, process_width, process_height, preprocess_txt_action, process_flip, process_split, process_caption, process_caption_deepbooru=False, split_threshold=0.5, overlap_ratio=0.2, process_focal_crop=False, process_focal_crop_face_weight=0.9, process_focal_crop_entropy_weight=0.3, process_focal_crop_edges_weight=0.5, process_focal_crop_debug=False):
+def preprocess(id_task, process_src, process_dst, process_width, process_height, preprocess_txt_action, process_flip, process_split, process_caption, process_caption_deepbooru=False, split_threshold=0.5, overlap_ratio=0.2, process_focal_crop=False, process_focal_crop_face_weight=0.9, process_focal_crop_entropy_weight=0.3, process_focal_crop_edges_weight=0.5, process_focal_crop_debug=False):
     try:
         if process_caption:
             shared.interrogator.load()
@@ -135,13 +135,18 @@ def preprocess_work(process_src, process_dst, process_width, process_height, pre
     params.process_caption_deepbooru = process_caption_deepbooru
     params.preprocess_txt_action = preprocess_txt_action
 
-    for index, imagefile in enumerate(tqdm.tqdm(files)):
+    pbar = tqdm.tqdm(files)
+    for index, imagefile in enumerate(pbar):
         params.subindex = 0
         filename = os.path.join(src, imagefile)
         try:
             img = Image.open(filename).convert("RGB")
         except Exception:
             continue
+
+        description = f"Preprocessing [Image {index}/{len(files)}]"
+        pbar.set_description(description)
+        shared.state.textinfo = description
 
         params.src = filename
 

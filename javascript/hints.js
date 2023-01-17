@@ -20,6 +20,7 @@ titles = {
     "\u{1f4be}": "Save style",
     "\U0001F5D1": "Clear prompt",
     "\u{1f4cb}": "Apply selected styles to current prompt",
+    "\u{1f4d2}": "Paste available values into the field",
 
     "Inpaint a part of image": "Draw a mask over an image, and the script will regenerate the masked area with content according to prompt",
     "SD upscale": "Upscale image normally, split result into tiles, improve each tile using img2img, merge whole image back",
@@ -92,6 +93,7 @@ titles = {
     "Weighted sum": "Result = A * (1 - M) + B * M",
     "Add difference": "Result = A + (B - C) * M",
 
+	"Initialization text": "If the number of tokens is more than the number of vectors, some may be skipped.\nLeave the textbox empty to start with zeroed out vectors",
     "Learning rate": "How fast should training go. Low values will take longer to train, high values may fail to converge (not generate accurate results) and/or may break the embedding (This has happened if you see Loss: nan in the training info textbox. If this happens, you need to manually restore your embedding from an older not-broken backup).\n\nYou can set a single numeric value, or multiple learning rates using the syntax:\n\n   rate_1:max_steps_1, rate_2:max_steps_2, ...\n\nEG:   0.005:100, 1e-3:1000, 1e-5\n\nWill train with rate of 0.005 for first 100 steps, then 1e-3 until 1000 steps, then 1e-5 for all remaining steps.",
 
     "Clip skip": "Early stopping parameter for CLIP model; 1 is stop at last layer as usual, 2 is stop at penultimate layer, etc.",

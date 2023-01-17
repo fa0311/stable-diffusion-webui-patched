@@ -34,6 +34,7 @@ import modules.sd_vae
 import modules.txt2img
 import modules.script_callbacks
 import modules.textual_inversion.textual_inversion
+import modules.progress
 
 import modules.ui
 from modules import modelloader
@@ -77,6 +78,8 @@ def initialize():
         print("", file=sys.stderr)
         print("Stable diffusion model failed to load, exiting", file=sys.stderr)
         exit(1)
+
+    shared.opts.data["sd_model_checkpoint"] = shared.sd_model.sd_checkpoint_info.title
 
     shared.opts.onchange("sd_model_checkpoint", wrap_queued_call(lambda: modules.sd_models.reload_model_weights()))
     shared.opts.onchange("sd_vae", wrap_queued_call(lambda: modules.sd_vae.reload_vae_weights()), call=False)
@@ -178,6 +181,8 @@ def webui():
         setup_cors(app)
 
         app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+        modules.progress.setup_progress_api(app)
 
         if launch_api:
             create_api(app)
