@@ -15,7 +15,7 @@ import numpy as np
 from PIL import Image, PngImagePlugin
 from torch.utils.tensorboard import SummaryWriter
 
-from modules import shared, devices, sd_hijack, processing, sd_models, images, sd_samplers
+from modules import shared, devices, sd_hijack, processing, sd_models, images, sd_samplers, sd_hijack_checkpoint
 import modules.textual_inversion.dataset
 from modules.textual_inversion.learn_schedule import LearnRateScheduler
 
@@ -50,6 +50,7 @@ class Embedding:
         self.sd_checkpoint = None
         self.sd_checkpoint_name = None
         self.optimizer_state_dict = None
+        self.filename = None
 
     def save(self, filename):
         embedding_data = {
@@ -182,6 +183,7 @@ class EmbeddingDatabase:
         embedding.sd_checkpoint_name = data.get('sd_checkpoint_name', None)
         embedding.vectors = vec.shape[0]
         embedding.shape = vec.shape[-1]
+        embedding.filename = path
 
         if self.expected_shape == -1 or self.expected_shape == embedding.shape:
             self.register_embedding(embedding, shared.sd_model)
@@ -452,6 +454,8 @@ def train_embedding(id_task, embedding_name, learn_rate, batch_size, gradient_st
 
     pbar = tqdm.tqdm(total=steps - initial_step)
     try:
+        sd_hijack_checkpoint.add()
+
         for i in range((steps-initial_step) * gradient_step):
             if scheduler.finished:
                 break
@@ -617,8 +621,10 @@ Last saved image: {html.escape(last_saved_image)}<br/>
         pbar.close()
         shared.sd_model.first_stage_model.to(devices.device)
         shared.parallel_processing_allowed = old_parallel_processing_allowed
+        sd_hijack_checkpoint.remove()
 
     return embedding, filename
+
 
 def save_embedding(embedding, optimizer, checkpoint, embedding_name, filename, remove_cached_checksum=True):
     old_embedding_name = embedding.name

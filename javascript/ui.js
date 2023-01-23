@@ -109,6 +109,13 @@ function get_extras_tab_index(){
     return [get_tab_index('mode_extras'), get_tab_index('extras_resize_mode'), ...args]
 }
 
+function get_img2img_tab_index() {
+    let res = args_to_array(arguments)
+    res.splice(-2)
+    res[0] = get_tab_index('mode_img2img')
+    return res
+}
+
 function create_submit_args(args){
     res = []
     for(var i=0;i<args.length;i++){
@@ -165,6 +172,15 @@ function submit_img2img(){
     return res
 }
 
+function modelmerger(){
+    var id = randomId()
+    requestProgress(id, gradioApp().getElementById('modelmerger_results_panel'), null, function(){})
+
+    var res = create_submit_args(arguments)
+    res[0] = id
+    return res
+}
+
 
 function ask_for_style_name(_, prompt_text, negative_prompt_text) {
     name_ = prompt('Style name:')
@@ -180,8 +196,6 @@ function confirm_clear_prompt(prompt, negative_prompt) {
     return [prompt, negative_prompt]
 }
 
-
-
 opts = {}
 onUiUpdate(function(){
 	if(Object.keys(opts).length != 0) return;
@@ -189,8 +203,8 @@ onUiUpdate(function(){
 	json_elem = gradioApp().getElementById('settings_json')
 	if(json_elem == null) return;
 
-    textarea = json_elem.querySelector('textarea')
-    jsdata = textarea.value
+    var textarea = json_elem.querySelector('textarea')
+    var jsdata = textarea.value
     opts = JSON.parse(jsdata)
     executeCallbacks(optionsChangedCallbacks);
 
@@ -214,14 +228,29 @@ onUiUpdate(function(){
 
     json_elem.parentElement.style.display="none"
 
-	if (!txt2img_textarea) {
-		txt2img_textarea = gradioApp().querySelector("#txt2img_prompt > label > textarea");
-		txt2img_textarea?.addEventListener("input", () => update_token_counter("txt2img_token_button"));
-	}
-	if (!img2img_textarea) {
-		img2img_textarea = gradioApp().querySelector("#img2img_prompt > label > textarea");
-		img2img_textarea?.addEventListener("input", () => update_token_counter("img2img_token_button"));
-	}
+    function registerTextarea(id, id_counter, id_button){
+        var prompt = gradioApp().getElementById(id)
+        var counter = gradioApp().getElementById(id_counter)
+        var textarea = gradioApp().querySelector("#" + id + " > label > textarea");
+
+        if(counter.parentElement == prompt.parentElement){
+            return
+        }
+
+
+        prompt.parentElement.insertBefore(counter, prompt)
+        counter.classList.add("token-counter")
+        prompt.parentElement.style.position = "relative"
+
+		textarea.addEventListener("input", function(){
+		    update_token_counter(id_button);
+		});
+    }
+
+    registerTextarea('txt2img_prompt', 'txt2img_token_counter', 'txt2img_token_button')
+    registerTextarea('txt2img_neg_prompt', 'txt2img_negative_token_counter', 'txt2img_negative_token_button')
+    registerTextarea('img2img_prompt', 'img2img_token_counter', 'img2img_token_button')
+    registerTextarea('img2img_neg_prompt', 'img2img_negative_token_counter', 'img2img_negative_token_button')
 
     show_all_pages = gradioApp().getElementById('settings_show_all_pages')
     settings_tabs = gradioApp().querySelector('#settings div')
@@ -234,7 +263,6 @@ onUiUpdate(function(){
         }
     }
 })
-
 
 onOptionsChanged(function(){
     elem = gradioApp().getElementById('sd_checkpoint_hash')
@@ -277,4 +305,12 @@ function restart_reload(){
     setTimeout(function(){location.reload()},2000)
 
     return []
+}
+
+// Simulate an `input` DOM event for Gradio Textbox component. Needed after you edit its contents in javascript, otherwise your edits
+// will only visible on web page and not sent to python.
+function updateInput(target){
+	let e = new Event("input", { bubbles: true })
+	Object.defineProperty(e, "target", {value: target})
+	target.dispatchEvent(e);
 }
