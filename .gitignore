@@ -29,6 +29,17 @@ notification.mp3
 /SwinIR
 /textual_inversion
 .vscode
+
+/tags
+/javascript/tagAutocomplete.js
+/scripts/tag_autocomplete_helper.py
+*.pt
+*.png
+ffmpeg/*
+hypernetwork_loss.csv
+input.mp4
+/localizations
+/textual_inversion_templates
 /extensions
 /test/stdout.txt
 /test/stderr.txt
